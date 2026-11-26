@@ -1,0 +1,28 @@
+name: Site smoke (all Stivco sites)
+
+# Runs here because this repo is public, so Actions minutes are free.
+# A failing run emails the repo admins; fix the site, then re-run.
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/smoke
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node .github/smoke/check.mjs
